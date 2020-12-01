@@ -1,0 +1,93 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <locale.h>
+#include <string.h>
+
+
+void menuprincipal(){
+setlocale(LC_ALL, "");
+
+// VARIÁVEL PARA ARMAZENAR A OPÇÃO DO MENU
+
+int opcao, a, resultado;
+
+
+do{ printf("| MENU PRINCIPAL DO SISTEMA |\n");
+    printf("1 - Cadastrar paciente.\n");
+    printf("2 - Cadastro de profissionais.\n");
+    printf("3 - Consultar cadastro de paciente.\n");
+    printf("4 - Consultar cadastro de profissional.\n");
+    printf("5 - Agendamento de consultas.\n");
+    printf("6 - Agenda.\n");
+    printf("7 - Cancelamento de consultas.\n");
+    printf("8 - Cadastro de funcionários.\n");
+    printf("9 - Sugestões, reclamações e elogios.\n");
+    printf("10 - Relatórios.\n");
+    printf("11 - Sobre.\n");
+    printf("12 - Sair\n");
+
+    printf("Digite a opção desejada: ");
+    scanf("%d", &opcao);
+    system("cls");
+
+
+    switch(opcao){
+
+    case 1:
+    cadastroP();
+
+    break;
+
+    case 2:
+    cadastroM();
+        break;
+
+    case 3:
+    consultarP();
+        break;
+
+    case 4:
+        consultarM();
+        break;
+    case 5:
+        agendamentoC();
+        break;
+
+    case 6:
+        agenda_do_dia();
+        break;
+
+    case 7:
+        cancelamento();
+        break;
+
+    case 8:
+        cadastroF();
+        break;
+    case 9:
+        outros();
+        break;
+
+    case 10:
+        relatorios();
+        break;
+    case 11:
+        printf("Sistema desenvolvido para fins acadêmicos.\nTrabalho realizado por: Igor Soares, Diego Teixeira, Giovanni Fiori, Marcos Gabriel, Natani Ranchelli, Ana Caroline.\n\n");
+        menuprincipal();
+        break;
+    case 12:
+        printf("\n\n Finalizando....");
+        sleep(3);
+        exit(1);
+
+
+    default:
+        printf("Opção inválida! Tente Novamente.\n\n");
+        }
+
+
+}while(opcao!=12);
+
+
+    }
+
