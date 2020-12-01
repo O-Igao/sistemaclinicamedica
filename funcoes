@@ -1,0 +1,822 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <locale.h>
+#include <string.h>
+
+
+// DADOS DO MÉDICO
+
+typedef struct{
+
+char nomecompleto[50];
+char datanasc[50];
+char CPF[50];
+char RG[50];
+char telefone[15];
+char email[50];
+int CRM;
+char especialidade[20];
+int vconsulta_convenio;
+int vconsulta_particular;
+int agencia;
+int conta;
+char tipo[2];
+char banco[30];
+char unidade[20];
+}Dmedico;
+
+
+
+
+
+// DADOS DO PACIENTE
+
+typedef struct{
+
+    char nomecompleto[60];
+    char datanasc[50];
+    char CPF[50];
+    char RG[50];
+    char telefone[50];
+    char email[50];
+    char endereco[50];
+    char cidadeEestado[50];
+    char validacar[50];
+    char convenio[50];
+    char carteirinha[50];
+    char unidade[20];
+
+
+}Dpaciente;
+
+// DADOS PARA AGENDAMENTO
+
+
+typedef struct{
+
+char profissional[40];
+char especialidade[20];
+char horario[6];
+char data[12];
+char paciente[20];
+char contato[12];
+}Dagendamento;
+
+
+//DADOS PARA CADASTRO DE FUNCIONÁRIOS
+
+typedef struct{
+
+char nomecompleto[30];
+char datanasc[12];
+char RG[12];
+char CPF[12];
+char numCTPS[20];
+char funcao[15];
+float salario;
+char dataadm[12];
+int agencia;
+int conta;
+char tipo[2];
+char banco[15];
+char unidade[10];
+char email[255];
+char senha[255];
+
+
+}Dfuncionario;
+
+
+// VARIÁVEIS GERAIS
+
+int i = 1, dados, retornar;
+char fpag;
+char formapag[2];
+Dpaciente paciente[150];
+Dmedico medico[150];
+Dagendamento agendamento[8];
+Dfuncionario funcionario[10];
+FILE *arquivo; //ponteiro do fopen do paciente
+FILE *arquivo2; // ponteiro do fopen do médico
+FILE *arquivo3; // ponteiro do agendamento
+FILE *arquivo4; // ponteiro dos logins
+FILE *arquivo5; //ponteiro do outros
+
+
+
+void login(){
+
+char email[20];
+char senha[15];
+
+
+arquivo4 = fopen("cadastro_funcionario.txt", "r");
+
+printf("************BEM VINDO AO SISTEMA DA MEDSP!************\n\n");
+
+voltaracesso:
+
+fflush(stdin);
+printf("Digite o seu usuário de acesso: ");
+fgets(email, 50, stdin);
+printf("Digite a sua senha de acesso: ");
+fgets(senha, 15, stdin);
+
+while(fread(&funcionario[i], sizeof(Dfuncionario), 1, arquivo4)!= 0){
+     if(strcmp(senha, funcionario[i].senha)== 0){
+        printf("Login realizado com sucesso!\n");
+        printf("Carregando...\n\n");
+        sleep(3);
+        system("cls");
+        menuprincipal();
+     }else{
+     printf("Usuário ou senha inválida!\n\n");
+     goto voltaracesso;
+     }
+
+}
+
+
+
+}
+
+
+
+
+void cadastroP(){
+setlocale(LC_ALL, "");
+
+
+
+
+
+
+arquivo = fopen("cadastro_paciente.txt", "a");
+
+
+
+    if(arquivo == NULL){
+        printf("Erro ao abrir o arquivo.");
+        };
+
+
+
+        printf("Você está na tela de cadastramento de pacientes.\n\n");
+        fflush(stdin);
+
+        printf("Digite o Nome Completo: ");
+        fgets(paciente[i].nomecompleto, 255, stdin); // Função que lê o nome
+        printf("Digite a data de nascimento(EX: DD/MM/AAAA): ");
+        fgets(paciente[i].datanasc, 255, stdin); // Função que lê a data de nasc
+        printf("Digite o número do CPF: ");
+        fgets(paciente[i].CPF, 255, stdin); // Função que lê o CPF
+        printf("Digite o número do RG: ");
+        fgets(paciente[i].RG, 255, stdin); // Função que lê o RG
+        printf("Digite o número do Telefone/Celular: ");
+        fgets(paciente[i].telefone, 255, stdin); // Função que lê o num de telefone
+        printf("Digite o email: ");
+        fgets(paciente[i].email, 255, stdin); // Função que lê o email
+
+        printf("Digite o endereço completo(EX: Rua, numCasa - Bairro): ");
+        fgets(paciente[i].endereco, 255, stdin); // Função que lê o endereço
+        printf("Digite a Cidade e o Estado(EX: Cidade/Estado): ");
+        fgets(paciente[i].cidadeEestado, 255, stdin);
+        printf("Particular ou Convênio? Informe com P ou C: ");
+        scanf("%c", &fpag); // Função que lê a forma de pagamento informada pelo printf
+        fpag = toupper(fpag);
+        if(fpag == 'P'){
+           printf("Digite D para Dinheiro ou C para Cartão.\n");
+           printf("Forma de pagamento: ");
+           scanf("%s", formapag); // Função que lê a forma de pagamento informada pelo printf
+            fpag = toupper(fpag);
+            }else if(fpag == 'C'){
+            fflush(stdin);
+            printf("Nome do Convênio: ");
+            fgets(paciente[i].convenio, 50, stdin); // Função que lê o nome do convenio
+            printf("Digite o número da carteirinha: ");
+            fgets(paciente[i].carteirinha, 50, stdin); // Função que lê o num da carteirinha
+            printf("Data de validade da carteirinha(DD/MM/AAAA), não inserir se já estiver vencida!: ");
+            fgets(paciente[i].validacar, 50, stdin); // Função que lê a validade da carteirinha
+            }
+            fflush(stdin);
+            printf("Zona Oeste.\nZona Norte.\nZona Leste.\nEscolha a unidade que o paciente irá ser atendido: ");
+            fgets(paciente[i].unidade, 20, stdin);
+
+        printf("Os dados estão corretos? Digite 1 para SIM ou 2 para NÃO: ");
+        scanf("%d", &dados);
+
+        if(dados == 1){
+                //SALVANDO OS DADOS EM TXT
+            fwrite(&paciente[i], sizeof(Dpaciente), 1, arquivo);
+            fclose(arquivo);
+            printf("O paciente foi cadastrado com sucesso!\n");
+
+            }else if(dados == 2){
+            printf("Os dados não foram cadastrados!\n");
+            }
+
+
+
+    printf("Para voltar ao menu principal digite 1 ou para sair digite iIGOR.M0: ");
+    scanf("%d", &retornar);
+        if(retornar == 1){
+            system("cls");
+            menuprincipal();
+        }else if(retornar == 0){
+            printf("Finalizando...");
+            sleep(3);
+            exit("1");
+        }
+
+
+}
+
+void cadastroM(){
+
+int retornarM, dadosM;
+
+
+
+    arquivo2 = fopen("cadastro_medico.txt", "a");
+
+
+    if(arquivo2 == NULL){
+        printf("Erro ao abrir o arquivo.");
+        };
+
+
+        printf("Você está na tela de cadastramento de médicos.\n\n");
+        getchar();
+        printf("Digite o Nome Completo: ");
+        fgets(medico[i].nomecompleto, 50, stdin); // Função que lê o nome
+        printf("Digite a data de nascimento(EX: DD/MM/AAAA): ");
+        fgets(medico[i].datanasc, 50, stdin); // Função que lê a data de nasc
+        printf("Digite o número do CPF: ");
+        fgets(medico[i].CPF, 50, stdin); // Função que lê o CPF
+        printf("Digite o número do RG: ");
+        fgets(medico[i].RG, 50, stdin); // Função que lê o RG
+        printf("Digite o número do Telefone/Celular: ");
+        fgets(medico[i].telefone, 50, stdin); // Função que lê o num de telefone
+        printf("Digite o email: ");
+        fgets(medico[i].email, 50, stdin); // Função que lê o email
+        printf("Digite o número do CRM do médico: ");
+        scanf("%d", &medico[i].CRM);
+        fflush(stdin);
+        printf("Informe a especialidade do médico: ");
+        fgets(medico[i].especialidade, 50, stdin);
+        printf("Informe o valor das consultas para convênios: ");
+        scanf("%d", &medico[i].vconsulta_convenio);
+        fflush(stdin);
+        printf("Informe o valor das consultas particulares: ");
+        scanf("%d", &medico[i].vconsulta_particular);
+        printf("Informe a agência bancária: ");
+        fflush(stdin);
+        scanf("%d", &medico[i].agencia);
+        printf("Informe a conta bancária: ");
+        scanf("%d", &medico[i].conta);
+        printf("Informe o tipo da conta, P para poupança ou CC para Conta-Corrente: ");
+        scanf("%s", &medico[i].tipo);
+        fflush(stdin);
+        printf("Informe o nome banco: ");
+        fgets(medico[i].banco, 20, stdin);
+        fflush(stdin);
+        printf("Zona Oeste.\nZona Norte.\nZona Leste.\nEscolha a unidade que o profissional vai atuar: ");
+        fgets(medico[i].unidade, 20, stdin);
+
+
+        printf("Os dados estão corretos? Digite 1 para SIM ou 2 para NÃO: ");
+        scanf("%d", &dadosM);
+
+        if(dadosM == 1){
+                //SALVANDO OS DADOS EM TXT
+            fwrite(&medico[i], sizeof(Dmedico), 1, arquivo2);
+            fclose(arquivo2);
+            system("cls");
+            printf("O profissional foi cadastrado com sucesso!\n");
+
+            }else if(dadosM == 2){
+            system("cls");
+            printf("Os dados não foram cadastrados!\n");
+            }
+
+    printf("Para voltar ao menu principal digite 1 ou para sair digite 0: ");
+    scanf("%d", &retornarM);
+        if(retornar == 1){
+            system("cls");
+            menuprincipal();
+        }else if(retornarM == 0){
+            printf("Finalizando...");
+            sleep(3);
+            exit("1");
+        }
+
+
+
+
+
+
+}
+
+
+void consultarP(FILE *arquivo){
+
+arquivo = fopen("cadastro_paciente.txt", "r");
+Dpaciente paciente[150];
+
+char CPF[60];
+int r;
+fflush(stdin);
+printf("Digite o CPF a ser buscado: ");
+fgets(CPF, 60, stdin);
+system("cls");
+printf("RESULTADO DA BUSCA\t\n");
+
+
+while(fread(&paciente[i], sizeof(Dpaciente), 1, arquivo)!= 0){
+    if(strcmp(CPF, paciente[i].CPF)== 0){
+    printf("Nome: %s\n", paciente[i].nomecompleto);
+    printf("Data de nascimento: %s\n", paciente[i].datanasc);
+    printf("CPF: %s\n", paciente[i].CPF);
+    printf("RG: %s\n", paciente[i].RG);
+    printf("Telefone: %s\n", paciente[i].telefone);
+    printf("Email: %s\n", paciente[i].email);
+    printf("Endereço: %s\n", paciente[i].endereco);
+    printf("Cidade/UF: %s\n", paciente[i].cidadeEestado);
+    printf("Convênio(C) ou Particular(P): %c\n", fpag);
+    if(fpag == 'C'){
+
+    printf("Validade da carteirinha: %s\n", paciente[i].validacar);
+    printf("Convenio: %s\n", paciente[i].convenio);
+    printf("Numero da carteirinha: %s\n", paciente[i].carteirinha);
+    }else if(fpag == 'P'){
+    fpag = toupper(fpag);
+    printf("Forma de pagamento(C para cartão, D para dinheiro): %s\n", formapag);
+        }
+    }
+
+}
+printf("Para voltar ao menu principal digite 1 ou para sair digite 0: ");
+    scanf("%d", &r);
+        if(r == 1){
+            system("cls");
+            menuprincipal();
+        }else if(r == 0){
+            printf("Finalizando...");
+            sleep(3);
+            exit("1");
+        }
+
+
+
+
+
+
+
+}
+
+
+void consultarM(FILE *arquivo){
+
+arquivo = fopen("cadastro_medico.txt", "r");
+Dmedico medico[150];
+
+char CPF[50];
+int rM; // Retornar Menu
+fflush(stdin);
+printf("Digite o CPF a ser buscado: ");
+fgets(CPF, 50, stdin);
+system("cls");
+printf("RESULTADO DA BUSCA\t\n");
+
+
+while(fread(&medico[i], sizeof(Dmedico), 1, arquivo2)!= 0){
+    if(strcmp(CPF, medico[i].CPF)== 0){
+
+    printf("Nome: %s\n", medico[i].nomecompleto);
+    printf("Data de nascimento: %s\n", medico[i].datanasc);
+    printf("CPF: %s\n", medico[i].CPF);
+    printf("RG: %s\n", medico[i].RG);
+    printf("Telefone: %s\n", medico[i].telefone);
+    printf("Email: %s\n", medico[i].email);
+    printf("CRM: %d\n", medico[i].CRM);
+    printf("Especialidade: %s\n", medico[i].especialidade);
+    printf("Valor consulta convênio: R$: %d\n", medico[i].vconsulta_convenio);
+    printf("Valor consulta particular: R$: %d\n", medico[i].vconsulta_particular);
+    printf("Agência bancária: %d\n", medico[i].agencia);
+    printf("Conta: %d\n", medico[i].conta);
+    printf("Tipo da conta: %d\n", medico[i].tipo);
+    printf("Banco: %s\n", medico[i].banco);
+        }
+
+    }
+
+printf("Para voltar ao menu principal digite 1 ou para sair digite 0: ");
+    scanf("%d", &rM);
+        if(rM == 1){
+            system("cls");
+            menuprincipal();
+        }else if(rM == 0){
+            printf("Finalizando...");
+            sleep(3);
+            exit("1");
+        }
+
+
+
+}
+
+
+void agendamentoC(){
+
+
+char CPF[12];
+int confirmar;
+Dagendamento agendamento[8];
+
+arquivo = fopen("cadastro_paciente.txt", "r");
+arquivo2 = fopen("cadastro_medico.txt", "r");
+arquivo3 = fopen("agendamento_consultas.txt","a");
+
+
+volta:
+
+printf("Você está na tela de agendamento de consultas.\n\n");
+printf("Digite o CPF do paciente: ");
+fflush(stdin);
+fgets(CPF, 12, stdin);
+
+while(fread(&paciente[i], sizeof(Dpaciente), 1, arquivo)!= 0){
+    if(strcmp(CPF, paciente[i].CPF)== 0){
+    printf("Paciente: %s\n", paciente[i].nomecompleto);
+            }
+    }
+
+printf("Para confirmar digite 1, para voltar digite 2: ");
+scanf("%d", &confirmar);
+if(confirmar == 1){
+strcpy(agendamento[i].paciente, paciente[i].nomecompleto);
+strcpy(agendamento[i].contato, paciente[i].telefone);
+
+printf("Qual especialidade deseja marcar?: ");
+fflush(stdin);
+fgets(agendamento[i].especialidade, 20, stdin);
+
+while(fread(&medico[i], sizeof(Dmedico), 1, arquivo2)!= 0){
+    if(strcmp(agendamento[i].especialidade, medico[i].especialidade)== 0){
+    printf("\nNome do profissional: %s\n", medico[i].nomecompleto);
+    printf("Valor da consulta convênio: R$%d,00. ", medico[i].vconsulta_convenio);
+    printf("Valor da consulta convênio: R$%d,00\n", medico[i].vconsulta_particular);
+
+    printf("Digite o nome do profissional que deseja marcar a consulta: ");
+    fflush(stdin);
+    fgets(agendamento[i].profissional, 40, stdin);
+
+    printf("Digite a data que deseja marcar a consulta: ");
+    fgets(agendamento[i].data, 12, stdin);
+
+    printf("\n10:30\n");
+    printf("11:30\n");
+    printf("13:30\n");
+    printf("14:30\n");
+    printf("15:30\n");
+    printf("16:30\n");
+    printf("17:30\n");
+    printf("18:30\n");
+    printf("Escolha um horário: \n");
+    scanf("%s", agendamento[i].horario);
+
+
+    // SALVANDO NO TXT.
+
+    fwrite(&agendamento[i], sizeof(Dagendamento), 1, arquivo3);
+    fclose(arquivo3);
+    printf("Agendamento realizado com sucesso!\n");
+    menuprincipal();
+        }else if(confirmar == 2){
+                goto volta;
+                    }
+            }
+        }
+    }
+
+
+void cancelamento(){
+
+char nome[40];
+FILE *novoAgendamento;
+
+arquivo3 = fopen("agendamento_consultas.txt","r");
+novoAgendamento = fopen("temp.txt", "w");
+
+printf("**********CANCELAMENTO DE CONSULTAS**********\n\n");
+
+    fflush(stdin);
+    printf("Digite o nome completo do paciente: ");
+    fgets(nome, 40, stdin);
+
+    while(!feof(arquivo3)){
+        fread(&agendamento, sizeof(Dagendamento), 1, arquivo3);
+        if(strcmp(nome, agendamento[i].paciente)){
+            fwrite(&agendamento[i], sizeof(Dagendamento), 1, novoAgendamento);
+        }
+    }
+    fclose(novoAgendamento);
+    fclose(arquivo3);
+    remove("agendamento_consultas.txt");
+    rename("temp.txt", "agendamento_consultas.txt");
+    printf("Cancelamento realizado com sucesso!\n\n");
+
+
+}
+
+
+void agenda_do_dia(){
+
+int opcao;
+int rA; // retornar agenda;
+char data[12];
+char profissional[40];
+
+
+arquivo3 = fopen("agendamento_consultas.txt","r");
+
+printf("********************AGENDA **********************\n\n");
+
+printf("1 - Consultar por data.\n");
+printf("2 - Consultar por profissional.\n");
+printf("3 - Menu principal.\n");
+printf("Escolha uma opção: ");
+scanf("%d", &opcao);
+system("cls");
+
+switch(opcao){
+
+case 1:
+
+printf("********************AGENDA********************\n\n");
+printf("Digite a data: ");
+fflush(stdin);
+fgets(data, 12, stdin);
+system("cls");
+
+while(fread(&agendamento[i], sizeof(Dagendamento), 1, arquivo3)!= 0){
+    if(strcmp(data, agendamento[i].data)== 0){
+
+    printf("Paciente: %s\n", agendamento[i].paciente);
+    printf("Contato: %s\n", agendamento[i].contato);
+    printf("Profissional: %s\n", agendamento[i].profissional);
+    printf("Especialidade: %s\n", agendamento[i].especialidade);
+    printf("Horário: %s\n", agendamento[i].horario);
+    printf("Data: %s\n\n", agendamento[i].data);
+        }
+}
+   printf("Para voltar ao menu principal digite 1 ou para sair digite 0: ");
+    scanf("%d", &rA);
+        if(rA == 1){
+            system("cls");
+            menuprincipal();
+        }else if(rA== 0){
+            printf("Finalizando...");
+            sleep(3);
+            exit("1");
+        }
+    break;
+
+
+case 2:
+
+printf("Informe o profissional: ");
+fflush(stdin);
+fgets(profissional, 40, stdin);
+system("cls");
+printf("********************AGENDA********************\n\n");
+while(fread(&agendamento[i], sizeof(Dagendamento), 1, arquivo3)!= 0){
+    if(strcmp(profissional, agendamento[i].profissional)== 0){
+    printf("Paciente: %s\n", agendamento[i].paciente);
+    printf("Contato: %s\n", agendamento[i].contato);
+    printf("Horário: %s\n", agendamento[i].horario);
+    printf("Data: %s\n\n", agendamento[i].data);
+
+    printf("Para voltar ao menu principal digite 1 ou para sair digite 0: ");
+    scanf("%d", &rA);
+        if(rA == 1){
+            system("cls");
+            menuprincipal();
+        }else if(rA== 0){
+            printf("Finalizando...");
+            sleep(3);
+            exit("1");
+                }
+            }
+    }
+
+break;
+
+case 3:
+menuprincipal();
+
+break;
+
+    }
+}
+
+
+void cadastroF(){
+
+int rF, sair;
+
+FILE *arquivo4;
+arquivo4 = fopen("cadastro_funcionario.txt", "a");
+
+printf("Você está na tela de cadastro de funcionário.\n");
+printf("Preencha os campos abaixo com as informações do colaborador.\n\n");
+
+    fflush(stdin);
+    printf("Nome completo: ");
+    fgets(funcionario[i].nomecompleto, 30, stdin);
+    printf("Data de nascimento: ");
+    fgets(funcionario[i].datanasc, 12, stdin);
+    printf("Número do RG: ");
+    fgets(funcionario[i].RG, 12, stdin);
+    printf("Número do CPF: ");
+    fgets(funcionario[i].CPF, 12, stdin);
+    fflush(stdin);
+    printf("Número da CTPS: ");
+    fgets(funcionario[i].numCTPS, 20, stdin);
+    printf("Função do colaborador: ");
+    fgets(funcionario[i].funcao, 15, stdin);
+    printf("Salário do colaborador: ");
+    scanf("%f", &funcionario[i].salario);
+    fflush(stdin);
+    printf("Data de admissão: ");
+    fgets(funcionario[i].dataadm, 12, stdin);
+    printf("Número da agência bancária: ");
+    scanf("%d", &funcionario[i].agencia);
+    printf("Número da conta bancária: ");
+    scanf("%d", &funcionario[i].conta);
+    fflush(stdin);
+    printf("Digite P para Poupança ou CC para Conta-Corrente: ");
+    fgets(funcionario[i].tipo, 2, stdin);
+    fflush(stdin);
+    printf("Zona Oeste.\nZona Norte.\nZona Leste.\nQual unidade o colaborador vai trabalhar?: ");
+    fgets(funcionario[i].unidade, 20, stdin);
+    fflush(stdin);
+    printf("Para confirmar as informações acima digite 1, para retornar digite 2: ");
+    scanf("%d", &rF);
+        if(rF == 1){
+    fflush(stdin);
+    system("cls");
+    printf("ATENÇÃO PARA CRIAÇÃO DE USUÁRIO PARA ACESSO AO SISTEMA!!!\n");
+    printf("O usuário será o nome do colaborador .medsp.\n");
+    printf("Exemplo: igor.medsp\n\n");
+    printf("Crie o usuário(seguindo o padrão informado acima): ");
+    fgets(funcionario[i].email, 255, stdin);
+    fflush(stdin);
+    printf("A senha deverá conter no começo Medsp@ e 4 números.\n");
+    printf("Exemplo: Medsp@1234\n");
+    printf("Informe a senha do colaborador(seguindo o padrão informado): ");
+    fgets(funcionario[i].senha, 255, stdin);
+        }else if(rF == 2){
+        system("cls");
+        menuprincipal();
+        }
+    fflush(stdin);
+    printf("Para salvar todas as informações, digite 1 ou para sair digite 2: ");
+    scanf("%d", &sair);
+    if(sair == 1){
+        fwrite(&funcionario[i], sizeof(Dfuncionario), 1, arquivo4);
+        fclose(arquivo4);
+        printf("Dados salvo com sucesso!\n\n");
+        menuprincipal();
+        }else if(sair == 2){
+        printf("Finalizando...");
+        sleep(3);
+        exit("1");
+
+        }
+}
+
+
+void relatorios(){
+
+int opcaorelatorio;
+char unidade[20], unidadeM[20];
+
+printf("************Tela de relatórios**************\n\n");
+fflush(stdin);
+printf("1 - Listar todos os pacientes por unidade.\n");
+printf("2 - Listar profissionais por unidade.\n");
+printf("3 - Listar funcionários por unidade.\n");
+printf("Escolha a opção desejada: ");
+scanf("%d", &opcaorelatorio);
+
+if(opcaorelatorio == 1){
+arquivo = fopen("Cadastros//Pacientes//cadastro_paciente.txt", "r");
+        fflush(stdin);
+        printf("******Pacientes por unidade******\n\n");
+        printf("Unidades: Zona Norte, Zona Oeste, Zona Leste.\n");
+        printf("Escolha a unidade: ");
+        fgets(unidade, 20, stdin);
+
+    while(fread(&paciente[i], sizeof(Dpaciente), 1, arquivo)!= 0){
+    if(strcmp(unidade, paciente[i].unidade)== 0){
+        printf("Paciente: %s", paciente[i].nomecompleto);
+                }
+            }
+}else if(opcaorelatorio == 2){
+
+        arquivo2 = fopen("cadastro_medico.txt", "r");
+        fflush(stdin);
+        printf("******Profissionais por unidade******\n\n");
+        printf("Unidades: Zona Norte, Zona Oeste, Zona Leste.\n");
+        printf("Escolha a unidade: ");
+        fgets(unidade, 20, stdin);
+
+    while(fread(&medico[i], sizeof(Dmedico), 1, arquivo2)!= 0){
+    if(strcmp(unidade, medico[i].unidade)== 0){
+        printf("Profissional: %s", medico[i].nomecompleto);
+                }
+            }
+    }else if(opcaorelatorio == 3){
+
+        arquivo4 = fopen("cadastro_funcionario.txt", "r");
+        fflush(stdin);
+        printf("******Funcionários por unidade******\n\n");
+        printf("Unidades: Zona Norte, Zona Oeste, Zona Leste.\n");
+        printf("Escolha a unidade: ");
+        fgets(unidade, 20, stdin);
+
+    while(fread(&funcionario[i], sizeof(Dfuncionario), 1, arquivo4)!= 0){
+    if(strcmp(unidade, funcionario[i].unidade)== 0){
+        printf("Funcionário: %s", funcionario[i].nomecompleto);
+                }
+            }
+    }
+
+}
+
+
+ void outros(){
+
+typedef struct{
+
+char nome[30];
+char unidade[20];
+char feedback[255];
+
+}Dfeedback;
+Dfeedback feedback;
+
+ FILE *arquivo5;
+ fopen("outros.txt","a");
+ int opcao, opcao2;
+
+ printf("1 - Sugestões.\n2 - Reclamações.\n3 - Elogios.\nEscolha a opção desejada: ");
+scanf("%d", &opcao);
+
+if(opcao == 1){
+    fflush(stdin);
+    printf("*****************TELA DE SUGESTÕES*****************\n");
+    printf("Nome do paciente(caso não queira se identificar, coloque 0): ");
+    fgets(feedback.nome, 30, stdin);
+    printf("Unidade: ");
+    fgets(feedback.unidade, 20, stdin);
+    printf("Informe a sugestão: ");
+    fgets(feedback.feedback, 255, stdin);
+    }else if(opcao == 2){
+    fflush(stdin);
+    printf("*****************TELA DE RECLAMAÇÕES*****************\n");
+    printf("Nome do paciente(caso não queira se identificar, coloque 0): ");
+    fgets(feedback.nome, 30, stdin);
+    printf("Unidade: ");
+    fgets(feedback.unidade, 20, stdin);
+    printf("Informe a reclamação: ");
+    fgets(feedback.feedback, 255, stdin);
+        }else if(opcao == 3){
+    fflush(stdin);
+    printf("*****************TELA DE ELOGIOS*****************\n");
+    printf("Nome do paciente(caso não queira se identificar, coloque 0): ");
+    fgets(feedback.nome, 30, stdin);
+    printf("Unidade: ");
+    fgets(feedback.unidade, 20, stdin);
+    printf("Informe o elogio: ");
+    fgets(feedback.feedback, 255, stdin);
+        }
+
+    printf("Para salvar digite 1, para sair digite 2: ");
+    scanf("%d", &opcao2);
+
+    if(opcao2 == 1){
+        fprintf(arquivo5, "%s", feedback.nome);
+        fprintf(arquivo5, "%s", feedback.unidade);
+        fprintf(arquivo5, "%s", feedback.feedback);
+        fprintf(arquivo5, "------- PROXIMO -------");
+        printf("As informações foram salvas com sucesso!\n\n");
+        fclose(arquivo5);
+        menuprincipal();
+        }else if(opcao2 == 2){
+        printf("As informações não foram salvas!\n\n");
+        menuprincipal();
+            }
+
+ }
